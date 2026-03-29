@@ -1,0 +1,106 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user information, quiz results, and learning progress.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier for the user." },
+        "displayName": { "type": "string", "description": "User's display name." },
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "photoURL": { "type": "string", "format": "uri", "description": "URL to user's profile photo." },
+        "onboardingComplete": { "type": "boolean", "description": "Whether the user has completed the initial quiz." },
+        "lastQuizResult": { "$ref": "QuizResult" },
+        "progress": { "$ref": "Progress" }
+      },
+      "required": ["uid", "displayName", "email", "onboardingComplete", "progress"]
+    },
+    "QuizResult": {
+      "title": "Quiz Result",
+      "description": "The outcome of a skill discovery quiz.",
+      "type": "object",
+      "properties": {
+        "scores": {
+          "type": "object",
+          "properties": {
+            "coding": { "type": "number" },
+            "design": { "type": "number" },
+            "business": { "type": "number" },
+            "communication": { "type": "number" },
+            "analytical": { "type": "number" }
+          }
+        },
+        "recommendations": {
+          "type": "array",
+          "items": { "$ref": "SkillRecommendation" }
+        },
+        "hiddenTalent": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        },
+        "timestamp": { "type": "number" }
+      }
+    },
+    "SkillRecommendation": {
+      "title": "Skill Recommendation",
+      "description": "A recommended skill path based on quiz results.",
+      "type": "object",
+      "properties": {
+        "skill": { "type": "string" },
+        "percentage": { "type": "number" },
+        "description": { "type": "string" },
+        "roadmap": {
+          "type": "array",
+          "items": { "$ref": "RoadmapStep" }
+        }
+      }
+    },
+    "RoadmapStep": {
+      "title": "Roadmap Step",
+      "description": "A single step in a learning roadmap.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "resources": {
+          "type": "array",
+          "items": { "$ref": "Resource" }
+        }
+      }
+    },
+    "Resource": {
+      "title": "Resource",
+      "description": "A learning resource (video, course, article).",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "type": { "type": "string", "enum": ["video", "course", "article"] }
+      }
+    },
+    "Progress": {
+      "title": "Progress",
+      "description": "User's learning progress.",
+      "type": "object",
+      "properties": {
+        "completedSteps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "enrolledSkills": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and progress data."
+    }
+  }
+}
